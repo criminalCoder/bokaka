@@ -30,7 +30,7 @@ async def channel_post(client: Client, message: Message):
 
     reply_markup = InlineKeyboardMarkup([
         [InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')],
-        [InlineKeyboardButton("📂Downolad / Stream🍿", callback_daa=f'generate_stream_link:{file_id}')],
+        [InlineKeyboardButton("📂Downolad / Stream🍿", callback_data=f'generate_stream_link:{file_id}')],
         [InlineKeyboardButton("Get EMBED code", callback_data=f'get_embed_code:{post_message.id}:{file.file_name}')]
         ])
 
