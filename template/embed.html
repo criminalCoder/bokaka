@@ -19,32 +19,62 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Delius">
     <link rel="stylesheet" href="https://cdn.plyr.io/3.6.9/plyr.css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- <script type='text/javascript' src='//assignmentlonesome.com/79/06/6a/79066ab56c89a6ae277014de11439328.js'></script> -->
 </head>
 
 <body class="bg-black">
-    
+    <header>
+        <!-- Navbar -->
+            <nav class="navbar bg-dark p-lg-4 p-2">
+               <div class="d-flex ">
+                 
+                <!-- web title -->
+                <div class="container-fluid">
+                    <a class="navbar-brand  text-light fw-bold " href="https://telegram.me/new_updet">
+                        <span class="bg-clip-text sm:text-[25px] text-[22px] text-transparent bg-gradient-to-r from-pink-500 to-violet-500">
+                            Nh_Helper
+                          </span>
+                    </a>
+                  </div>
+               </div>
+            </nav>
+            <!-- ./Navbar -->
+    </header>
+    <!-- ./Header -->
 
     <div class="bg-black  text-light"  >
         <!-- file Name -> to be displayed here  -->
-        <span  class="h6 flex-wrap text-center justify-center items-center card-title wow animate__animated animate__fadeInRight" >
-            %s
-        </span>
-
+        <div class="justify-content-center align-items-center w-100 d-flex">
+            <div id="file-name" class="tex-center text-lg max:w-74  p-2 flex-wrap text-center justify-center items-center">
+                <p class="fw-bold"> 
+                    <span id="myDiv" class="h6 flex-wrap text-center justify-center items-center card-title wow animate__animated animate__fadeInRight" >
+                        %s
+                    </span>
+                </p>
+            </div>
+        </div>
         <!-- Online Video Player -> to be displayed here  -->
-        <div class="">
-            <video id="player" class="player" style="width: 100%; height: 100vh;" playsinline controls>
-                <source src="%s" type="video/mp4">
-            </video>
+        <div class="justify-content-center align-items-center w-100 d-flex  flex-wrap">
+            <div class="lg:w-9/12 lg:px-12 lg:py-4 w-full  border border-danger wow animate__animated animate__fadeInLeft">
+                <video id="player" class="player " playsinline controls>
+                    <source src="%s" type="video/mp4">
+                </video>
+            </div>
         </div>
 
 
-        <!-- <script async="async" data-cfasync="false" src="//assignmentlonesome.com/56c37799670977f079248a7ca1ea2ddf/invoke.js"></script>
-        <div id="container-56c37799670977f079248a7ca1ea2ddf"></div> -->
 
     </div>
 
 
+
+
+    <script src="https://apis.google.com/js/api.js"></script>
+
+    
+    <script src="js/wow.min.js"></script>
+    <script>
+        new WOW().init();
+    </script>
 
     <!--🥰  Thank you for giving me credit @LazyDeveloperr  🥰 -->
     <script src="https://cdn.plyr.io/3.6.9/plyr.js"></script>
@@ -70,27 +100,7 @@
         });
 
     </script>
-    <!-- iterate animation -->
 
-
-    <!-- disabling right click -->
-    <!-- <script>
-        document.addEventListener("contextmenu", function (e) {
-        e.preventDefault();
-    });
-    document.addEventListener('keydown', function (e) {
-        if (
-            e.key === 'F12' ||
-            (e.ctrlKey && e.shiftKey && e.key === 'I') ||
-            (e.ctrlKey && e.key === 'u') ||
-            e.ctrlKey ||
-            e.shiftKey ||
-            e.altKey
-        ) {
-            e.preventDefault();
-        }
-    });
-    </script>
-     -->
+    
 </body>
 </html>
