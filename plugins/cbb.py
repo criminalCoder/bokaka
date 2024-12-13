@@ -1,5 +1,5 @@
 
-from pyrogram import Client, __version__
+from pyrogram import Client, enums, __version__
 # from bot import Bot
 from config import STREAM_LOGS
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
@@ -8,6 +8,7 @@ from urllib.parse import quote_plus
 from util.file_properties import get_name, get_hash
 from plugins.send_file import media_forward
 from config import *
+
 
 @Client.on_callback_query()
 async def cb_handler(client: Client, query: CallbackQuery):
@@ -106,7 +107,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                 text=f"Here is your embed code:\n\n<code>{embed_code}</code>",
                 quote=True,
                 disable_web_page_preview=True,
-                parse_mode="HTML"
+                parse_mode=enums.ParseMode.HTML
             )
         except Exception as e:
             print(e)
