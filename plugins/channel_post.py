@@ -14,7 +14,7 @@ async def channel_post(client: Client, message: Message):
     file = getattr(message, message.media.value)
     # fileid = file.file_id
     print(f"Got file id ==> {file}")
-    
+
     try:
         post_message = await message.copy(chat_id = client.db_channel.id, disable_notification=True)
     except FloodWait as e:
@@ -24,8 +24,9 @@ async def channel_post(client: Client, message: Message):
         print(e)
         await reply_text.edit_text("Something went Wrong..!")
         return
-    fileid = post_message.id
-    print(f"Got POst file id ==> {fileid}")
+    fileid = message.id
+    print(f"fileid => {fileid}")
+    # print(f"Got POst file id ==> {fileid}")
     converted_id = post_message.id * abs(client.db_channel.id)
     string = f"get-{converted_id}"
     base64_string = await encode(string)
