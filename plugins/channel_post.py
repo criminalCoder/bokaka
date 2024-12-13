@@ -37,11 +37,11 @@ async def channel_post(client: Client, message: Message):
         [
         [InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')],
         [InlineKeyboardButton("📂Downolad / Stream🍿", callback_data=f'generate_stream_link')],
-        [InlineKeyboardButton("Get EMBED code", callback_data=f'get_embed_code')]
+        [InlineKeyboardButton("<> Get EMBED code </>", callback_data=f'get_embed_code')]
         ]
         )
 
-    await reply_text.edit(f"<b>Here is your link</b>\n\n{link}", reply_markup=reply_markup, disable_web_page_preview = True)
+    await reply_text.edit(f"<b>📂Telegram File Link:</b>\n{link}", reply_markup=reply_markup, disable_web_page_preview = True)
 
     if not DISABLE_CHANNEL_BUTTON:
         await post_message.edit_reply_markup(reply_markup)
