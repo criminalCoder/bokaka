@@ -15,7 +15,6 @@ import aiofiles
 import logging
 import aiohttp
 
-
 async def render_page(id, secure_hash, page_type):
     file_data=await get_file_ids(lazydeveloperxbot, int(STREAM_LOGS), int(id))
     if file_data.unique_id[:6] != secure_hash:

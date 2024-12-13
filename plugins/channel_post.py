@@ -43,8 +43,8 @@ async def channel_post(client: Client, message: Message):
 
     await reply_text.edit(f"<b>📂Telegram File Link:</b>\n{link}", reply_markup=reply_markup, disable_web_page_preview = True)
 
-    if not DISABLE_CHANNEL_BUTTON:
-        await post_message.edit_reply_markup(reply_markup)
+    # if not DISABLE_CHANNEL_BUTTON:
+    #     await post_message.edit_reply_markup(reply_markup)
 
 @Client.on_message(filters.channel & filters.incoming & filters.chat(CHANNEL_ID))
 async def new_post(client: Client, message: Message):
