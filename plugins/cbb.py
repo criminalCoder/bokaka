@@ -27,15 +27,19 @@ async def cb_handler(client: Client, query: CallbackQuery):
             )
         )
     elif data.startswith("generate_stream_link"):
-        _, fileid = data.split(":")
+        # _, fileid = data.split(":")
         print("hit generate_stream_link callback")
         try:
             user_id = query.from_user.id
             username =  query.from_user.mention 
+            # Directly access the file from the callback query's associated message
+            file = getattr(query.message.reply_to_message, query.message.reply_to_message.media.value)
+            file_id = file.file_id
+            # file_name = quote_plus(file.file_name)
 
             log_msg = await client.send_cached_media(
                 chat_id=STREAM_LOGS, 
-                file_id=fileid,
+                file_id=file_id,
             )
 
             fileName = {quote_plus(get_name(log_msg))}
