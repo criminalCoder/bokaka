@@ -69,9 +69,12 @@ async def cb_handler(client: Client, query: CallbackQuery):
             await query.answer(f"☣something went wrong sweetheart\n\n{e}", show_alert=True)
             return 
     elif data.startswith("get_embed_code"):
-        _, fileid, = data.split(":")
+        # _, fileid, = data.split(":")
         print('Hit me 1')
         try:
+            file = getattr(query.message.reply_to_message, query.message.reply_to_message.media.value)
+            fileid = file.file_id
+
             log_msg = await client.send_cached_media(
                 chat_id=STREAM_LOGS, 
                 file_id=fileid,
