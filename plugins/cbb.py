@@ -8,6 +8,7 @@ from urllib.parse import quote_plus
 from util.file_properties import get_name, get_hash
 from plugins.send_file import media_forward
 from config import *
+from html import escape
 
 
 @Client.on_callback_query()
@@ -85,7 +86,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             print(f'Hit me 1 {fileName}')
             
             # Generate the embed URL
-            lazy_embed = f"{URL}/embed/{str(log_msg.id)}/{fileName}?hash={get_hash(log_msg.id)}"
+            lazy_embed = f"{URL}embed/{str(log_msg.id)}/{quote_plus(get_name(log_msg))}?hash={get_hash(log_msg.id)}"
             print(f'Hit me 1 = {lazy_embed}')
             # Create the HTML embed code
             embed_code = f"""
@@ -102,9 +103,10 @@ async def cb_handler(client: Client, query: CallbackQuery):
             </div>
             """
             print(f'Hit me 1 {embed_code}')
+            escaped_embed_code = escape(embed_code)  # Escapes special characters
             # Send the embed code to the user
             await query.message.reply_text(
-                text=f"Here is your embed code:\n\n<code>{embed_code}</code>",
+                text=f"Here is your embed code:\n\n<code>{escaped_embed_code}</code>",
                 quote=True,
                 disable_web_page_preview=True,
                 parse_mode=enums.ParseMode.HTML
