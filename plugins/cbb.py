@@ -1,61 +1,104 @@
 
-import asyncio
-from pyrogram import filters, Client
-from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
-from pyrogram.errors import FloodWait
-
+from pyrogram import Client, __version__
 # from bot import Bot
-from config import ADMINS, CHANNEL_ID, DISABLE_CHANNEL_BUTTON
-from helper_func import encode
+from config import STREAM_LOGS
+from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+import asyncio
+from urllib.parse import quote_plus
+from util.file_properties import get_name, get_hash
+from plugins.send_file import media_forward
+from config import *
 
-@Client.on_message(filters.private & (filters.document | filters.video | filters.audio) & filters.user(ADMINS) & ~filters.command(['start','users','broadcast','batch','genlink','stats']))
-async def channel_post(client: Client, message: Message):
-    reply_text = await message.reply_text("Please Wait...!", quote = True)
-    file = getattr(message, message.media.value)
-    # fileid = file.file_id
-    print(f"Got file id ==> {file}")
-    
-    try:
-        post_message = await message.copy(chat_id = client.db_channel.id, disable_notification=True)
-    except FloodWait as e:
-        await asyncio.sleep(e.x)
-        post_message = await message.copy(chat_id = client.db_channel.id, disable_notification=True)
-    except Exception as e:
-        print(e)
-        await reply_text.edit_text("Something went Wrong..!")
-        return
-    fileid = post_message.id
-    print(f"Got POst file id ==> {fileid}")
-    converted_id = post_message.id * abs(client.db_channel.id)
-    string = f"get-{converted_id}"
-    base64_string = await encode(string)
-    link = f"https://t.me/{client.username}?start={base64_string}"
+@Client.on_callback_query()
+async def cb_handler(client: Client, query: CallbackQuery):
+    data = query.data
+    cb_data = query.data
+    if data == "about":
+        await query.message.edit_text(
+            text = f"○ Dev : <a href='https://t.me/LazyDeveloperr'>❤LazyDeveloperr❤</a>\n○  Updates Channel: <a href='https://t.me/LazyDeveloper'> LazyDeveloper</a> </b>",
+            disable_web_page_preview = True,
+            reply_markup = InlineKeyboardMarkup(
+                [
+                    [
+                    InlineKeyboardButton("⚡️ ᴄʟᴏsᴇ", callback_data = "close"),
+                    InlineKeyboardButton('🍁 ᴘʀᴇᴍɪᴜᴍ', url='https://t.me/LazyDeveloperr')
+                    ]
+                ]
+            )
+        )
+    elif data.startswith("generate_stream_link"):
+        _, fileid = data.split(":")
+        print("hit generate_stream_link callback")
+        try:
+            user_id = query.from_user.id
+            username =  query.from_user.mention 
 
-    reply_markup = InlineKeyboardMarkup(
-        [
-        [InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')],
-        [InlineKeyboardButton("📂Downolad / Stream🍿", callback_data=f'generate_stream_link:{fileid}')],
-        [InlineKeyboardButton("Get EMBED code", callback_data=f'get_embed_code:{post_message.id}:{file.file_name}')]
-        ])
+            log_msg = await client.send_cached_media(
+                chat_id=STREAM_LOGS, 
+                file_id=fileid,
+            )
 
-    await reply_text.edit(f"<b>Here is your link</b>\n\n{link}", reply_markup=reply_markup, disable_web_page_preview = True)
+            fileName = {quote_plus(get_name(log_msg))}
+            lazy_stream = f"{URL}watch/{str(log_msg.id)}/{quote_plus(get_name(log_msg))}?hash={get_hash(log_msg)}"
+            lazy_download = f"{URL}{str(log_msg.id)}/{quote_plus(get_name(log_msg))}?hash={get_hash(log_msg)}"
 
-    if not DISABLE_CHANNEL_BUTTON:
-        await post_message.edit_reply_markup(reply_markup)
+            xo = await query.message.reply_text(f'🔐')
+            await asyncio.sleep(1)
+            await xo.delete()
 
-@Client.on_message(filters.channel & filters.incoming & filters.chat(CHANNEL_ID))
-async def new_post(client: Client, message: Message):
+            await log_msg.reply_text(
+                text=f"•• ʟɪɴᴋ ɢᴇɴᴇʀᴀᴛᴇᴅ ꜰᴏʀ ɪᴅ #{user_id} \n•• ᴜꜱᴇʀɴᴀᴍᴇ : {username} \n\n•• ᖴᎥᒪᗴ Nᗩᗰᗴ : {fileName}",
+                quote=True,
+                disable_web_page_preview=True,
+                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("web Download", url=lazy_download),  # we download Link
+                                                    InlineKeyboardButton('▶Stream online', url=lazy_stream)]])  # web stream Link
+            )
+            await query.message.reply_text(
+                text="•• ʟɪɴᴋ ɢᴇɴᴇʀᴀᴛᴇᴅ ☠︎⚔",
+                quote=True,
+                disable_web_page_preview=True,
+                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("web Download", url=lazy_download),  # we download Link
+                                                    InlineKeyboardButton('▶Stream online', url=lazy_stream)]])  # web stream Link
+            )
+        except Exception as e:
+            print(e)  # print the error message
+            await query.answer(f"☣something went wrong sweetheart\n\n{e}", show_alert=True)
+            return 
+    elif data.startswith("get_embed_code"):
+        _, log_id, file_name = data.split(":")
+        try:
+            # Generate the embed URL
+            lazy_embed = f"{URL}/embed/{log_id}/{file_name}?hash={get_hash(log_id)}"
 
-    if DISABLE_CHANNEL_BUTTON:
-        return
+            # Create the HTML embed code
+            embed_code = f"""
+            <div style="position: relative; padding-bottom: 56.25%; height: 0">
+                <iframe
+                    src="{lazy_embed}"
+                    scrolling="no"
+                    frameborder="0"
+                    webkitallowfullscreen
+                    mozallowfullscreen
+                    allowfullscreen
+                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%">
+                </iframe>
+            </div>
+            """
 
-    converted_id = message.id * abs(client.db_channel.id)
-    string = f"get-{converted_id}"
-    base64_string = await encode(string)
-    link = f"https://t.me/{client.username}?start={base64_string}"
-    reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')]])
-    try:
-        await message.edit_reply_markup(reply_markup)
-    except Exception as e:
-        print(e)
-        pass
+            # Send the embed code to the user
+            await query.message.reply_text(
+                text=f"Here is your embed code:\n\n<code>{embed_code}</code>",
+                quote=True,
+                disable_web_page_preview=True,
+                parse_mode="HTML"
+            )
+        except Exception as e:
+            print(e)
+            await query.answer(f"☣ Unable to generate embed code\n\n{e}", show_alert=True)
+
+    elif data == "close":
+        await query.message.delete()
+        try:
+            await query.message.reply_to_message.delete()
+        except:
+            pass
