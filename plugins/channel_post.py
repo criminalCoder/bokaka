@@ -11,9 +11,9 @@ from helper_func import encode
 @Client.on_message(filters.private & (filters.document | filters.video | filters.audio) & filters.user(ADMINS) & ~filters.command(['start','users','broadcast','batch','genlink','stats']))
 async def channel_post(client: Client, message: Message):
     reply_text = await message.reply_text("Please Wait...!", quote = True)
-    file = getattr(message, message.media.value)
+    # file = getattr(message, message.media.value)
     # fileid = file.file_id
-    print(f"Got file id ==> {file}")
+    # print(f"Got file id ==> {file}")
 
     try:
         post_message = await message.copy(chat_id = client.db_channel.id, disable_notification=True)
@@ -24,8 +24,9 @@ async def channel_post(client: Client, message: Message):
         print(e)
         await reply_text.edit_text("Something went Wrong..!")
         return
-    fileid = message.id
-    print(f"fileid => {fileid}")
+    
+    # fileid = message.id
+    # print(f"fileid => {fileid}")
     # print(f"Got POst file id ==> {fileid}")
     converted_id = post_message.id * abs(client.db_channel.id)
     string = f"get-{converted_id}"
@@ -37,7 +38,8 @@ async def channel_post(client: Client, message: Message):
         [InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')],
         [InlineKeyboardButton("📂Downolad / Stream🍿", callback_data=f'generate_stream_link')],
         [InlineKeyboardButton("Get EMBED code", callback_data=f'get_embed_code')]
-        ])
+        ]
+        )
 
     await reply_text.edit(f"<b>Here is your link</b>\n\n{link}", reply_markup=reply_markup, disable_web_page_preview = True)
 

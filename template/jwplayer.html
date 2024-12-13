@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Play with JW Player</title>
+  <script src="https://content.jwplatform.com/libraries/SAHhwvZq.js"></script>
+  <style>
+    body { margin: 0; padding: 0; background-color: black; color: white; font-family: Arial, sans-serif; }
+    #jwplayerDiv { width: 100%; height: 100vh; }
+  </style>
+</head>
+<body>
+    
+  <div id="jwplayerDiv"></div>
+  
+  <script>
+    jwplayer("jwplayerDiv").setup({
+      file: "{VIDEO_URL}", // Dynamic video URL
+      width: "100%",
+      height: "100%",
+      autostart: true
+    });
+  </script>
+</body>
+</html>

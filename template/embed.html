@@ -3,32 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Embed Video</title>
+    <title>%s | LazyDeveloperr | Embed</title>
+
     <style>
-        body {
+        body,
+        html {
             margin: 0;
             padding: 0;
-            overflow: hidden;
-            background-color: black;
-        }
-        iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 100%;
-            border: none;
+        }
+
+        #player {
+            width: 100%;
+            height: 100%;
+        }
+        html {
+        font-family:
+            ProximaNova,
+            -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            Roboto,
+            "Helvetica Neue",
+            Arial,
+            sans-serif;
+        font-size: 15px;
+        font-weight: 400;
+        text-size-adjust: 100%;
+        background: #fff;
+        color: #666;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizelegibility;
+        }
+
+        .icon {
+        margin: 0;
+        border: none;
+        border-radius: 0;
+        overflow: visible;
+        font: inherit;
+        color: inherit;
+        text-transform: none;
+        padding: 0;
+        background-color: transparent;
+        display: inline-block;
+        fill: currentcolor;
+        line-height: 0;
+        }
+
+        .flex {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        }
+
+        .spinner > * > * {
+        stroke-dasharray: 88px;
+        stroke-dashoffset: 0;
+        transform-origin: center;
+        animation: spinner-dash 1.4s ease-in-out infinite;
+        stroke-width: 1;
+        stroke-linecap: round;
+        }
+
+        @keyframes spinner-dash {
+        0% {
+            stroke-dashoffset: 88px;
+        }
+
+        50% {
+            stroke-dashoffset: 22px;
+            transform: rotate(135deg);
+        }
+
+        100% {
+            stroke-dashoffset: 88px;
+            transform: rotate(450deg);
+        }
+        }
+
+        .uk-hidden {
+        display: none;
         }
     </style>
 </head>
 <body>
-    <iframe
-        src="{VIDEO_SRC}"
-        scrolling="no"
-        frameborder="0"
-        webkitallowfullscreen
-        mozallowfullscreen
-        allowfullscreen>
-    </iframe>
+    
+    <!-- div for player -->
+    <div>
+        <video id="player" class="player " playsinline controls>
+            <source src="%s" type="video/mp4">
+        </video>
+    </div>
+
+    <!-- 🧩 set-up player ⏩ -->
+    <script>
+        const controls = [
+            'play-large',
+            'rewind','play', 
+            'fast-forward', 
+            'progress', 
+            'current-time',
+            'duration',
+            'mute',
+            'volume',
+            'captions',
+            'settings',
+            'pip',
+            'airplay',
+            'download',
+            'fullscreen'
+        ];
+        document.addEventListener('DOMContentLoaded', () => {
+            const player = Plyr.setup('.player', { controls });
+        });
+
+    </script>
+    
 </body>
 </html>

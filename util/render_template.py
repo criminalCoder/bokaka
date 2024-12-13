@@ -16,7 +16,7 @@ import logging
 import aiohttp
 
 
-async def render_page(id, secure_hash):
+async def render_page(id, secure_hash, page_type):
     file_data=await get_file_ids(lazydeveloperxbot, int(STREAM_LOGS), int(id))
     if file_data.unique_id[:6] != secure_hash:
         logging.debug(f'link hash: {secure_hash} - {file_data.unique_id[:6]}')
@@ -24,15 +24,29 @@ async def render_page(id, secure_hash):
         raise InvalidHash
     src = urllib.parse.urljoin(URL, f'{secure_hash}{str(id)}')
     if str(file_data.mime_type.split('/')[0].strip()) == 'video':
-        async with aiofiles.open('template/req.html') as r:
-            heading = 'Watch {}'.format(file_data.file_name)
-            tag = file_data.mime_type.split('/')[0].strip()
-            html = (await r.read()).replace('tag', tag) % (heading, file_data.file_name, src)
+        if page_type=="req":
+            async with aiofiles.open('template/req.html') as r:
+                heading = 'Watch {}'.format(file_data.file_name)
+                tag = file_data.mime_type.split('/')[0].strip()
+                html = (await r.read()).replace('tag', tag) % (heading, file_data.file_name, src)
+        
+        if page_type=="embed":
+            async with aiofiles.open('template/embed.html') as r:
+                heading = 'Watch {}'.format(file_data.file_name)
+                tag = file_data.mime_type.split('/')[0].strip()
+                html = (await r.read()).replace('tag', tag) % (heading, file_data.file_name, src)
+
     elif str(file_data.mime_type.split('/')[0].strip()) == 'audio':
-        async with aiofiles.open('template/req.html') as r:
-            heading = 'Listen {}'.format(file_data.file_name)
-            tag = file_data.mime_type.split('/')[0].strip()
-            html = (await r.read()).replace('tag', tag) % (heading, file_data.file_name, src)
+        if page_type=="req":
+            async with aiofiles.open('template/req.html') as r:
+                heading = 'Listen {}'.format(file_data.file_name)
+                tag = file_data.mime_type.split('/')[0].strip()
+                html = (await r.read()).replace('tag', tag) % (heading, file_data.file_name, src)
+        if page_type=="embed":
+            async with aiofiles.open('template/embed.html') as r:
+                heading = 'Listen {}'.format(file_data.file_name)
+                tag = file_data.mime_type.split('/')[0].strip()
+                html = (await r.read()).replace('tag', tag) % (heading, file_data.file_name, src)
     else:
         async with aiofiles.open('template/dl.html') as r:
             async with aiohttp.ClientSession() as s:

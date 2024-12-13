@@ -57,7 +57,7 @@ async def stream_handler(request: web.Request):
         else:
             id = int(re.search(r"(\d+)(?:\/\S+)?", path).group(1))
             secure_hash = request.rel_url.query.get("hash")
-        return web.Response(text=await render_page(id, secure_hash), content_type='text/html')
+        return web.Response(text=await render_page(id, secure_hash, page_type="req"), content_type='text/html')
     except InvalidHash as e:
         raise web.HTTPForbidden(text=e.message)
     except FIleNotFound as e:
@@ -67,37 +67,79 @@ async def stream_handler(request: web.Request):
     except Exception as e:
         logging.critical(e.with_traceback(None))
         raise web.HTTPInternalServerError(text=str(e))
-@routes.get(r"/embed/{log_id:\d+}/{file_name}", allow_head=True)
-async def embed_route_handler(request: web.Request):
+    
+@routes.get(r"/embed/{path:\S+}", allow_head=True)
+async def embed_handler(request: web.Request):
     try:
-        log_id = request.match_info["log_id"]
-        file_name = request.match_info["file_name"]
-        secure_hash = request.rel_url.query.get("hash")
-
-        # Validate file and hash
-        file_data = await get_file_ids(lazydeveloperxbot, int(STREAM_LOGS), int(log_id))
-        if file_data.unique_id[:6] != secure_hash:
-            raise InvalidHash
-
-        # Generate the video source URL
-        video_src = f"{URL}watch/{log_id}/{file_name}?hash={secure_hash}"
-
-        # Load the embed template
-        async with aiofiles.open("template/embed.html", mode="r") as file:
-            embed_template = await file.read()
-
-        # Replace placeholder with video source URL
-        embed_html = embed_template.replace("{VIDEO_SRC}", video_src)
-
-        return web.Response(text=embed_html, content_type="text/html")
-
-    except InvalidHash:
-        raise web.HTTPForbidden(text="Invalid hash for embed link.")
-    except FIleNotFound:
-        raise web.HTTPNotFound(text="File not found for embed link.")
+        path = request.match_info["path"]
+        match = re.search(r"^([a-zA-Z0-9_-]{6})(\d+)$", path)
+        if match:
+            secure_hash = match.group(1)
+            id = int(match.group(2))
+        else:
+            id = int(re.search(r"(\d+)(?:\/\S+)?", path).group(1))
+            secure_hash = request.rel_url.query.get("hash")
+        return web.Response(text=await render_page(id, secure_hash, page_type="embed"), content_type='text/html')
+    except InvalidHash as e:
+        raise web.HTTPForbidden(text=e.message)
+    except FIleNotFound as e:
+        raise web.HTTPNotFound(text=e.message)
+    except (AttributeError, BadStatusLine, ConnectionResetError):
+        pass
     except Exception as e:
-        logging.error(f"Embed Route Error: {str(e)}")
+        logging.critical(e.with_traceback(None))
         raise web.HTTPInternalServerError(text=str(e))
+
+# @routes.get(r"/embed/{log_id:\d+}/{file_name}", allow_head=True)
+# async def embed_route_handler(request: web.Request):
+#     try:
+#         log_id = request.match_info["log_id"]
+#         file_name = request.match_info["file_name"]
+#         secure_hash = request.rel_url.query.get("hash")
+
+#         # Validate file and hash
+#         file_data = await get_file_ids(lazydeveloperxbot, int(STREAM_LOGS), int(log_id))
+#         if file_data.unique_id[:6] != secure_hash:
+#             raise InvalidHash
+
+#         # Generate the video source URL
+#         video_src = f"{URL}watch/{log_id}/{file_name}?hash={secure_hash}"
+
+#         # Load the embed template
+#         async with aiofiles.open("template/embed.html", mode="r") as file:
+#             embed_template = await file.read()
+
+#         # Replace placeholder with video source URL
+#         embed_html = embed_template.replace("{VIDEO_SRC}", video_src)
+
+#         return web.Response(text=embed_html, content_type="text/html")
+
+#     except InvalidHash:
+#         raise web.HTTPForbidden(text="Invalid hash for embed link.")
+#     except FIleNotFound:
+#         raise web.HTTPNotFound(text="File not found for embed link.")
+#     except Exception as e:
+#         logging.error(f"Embed Route Error: {str(e)}")
+#         raise web.HTTPInternalServerError(text=str(e))
+
+@routes.get(r"/jwplayer/{url_hash}", allow_head=True)
+async def jwplayer_handler(request):
+    url_hash = request.match_info["url_hash"]
+
+    # Retrieve the video URL from the in-memory dictionary
+    video_url = client.jwplayer_urls.get(url_hash)
+    if not video_url:
+        return web.Response(text="❌ Invalid or expired link.", status=404)
+
+    # Load and modify the JWPlayer template
+    async with aiofiles.open("template/jwplayer.html", mode="r") as file:
+        html_content = await file.read()
+
+    # Replace the placeholder with the actual video URL
+    html_content = html_content.replace("{VIDEO_URL}", video_url)
+
+    return web.Response(text=html_content, content_type="text/html")
+
 
 @routes.get(r"/{path:\S+}", allow_head=True)
 async def stream_handler(request: web.Request):
