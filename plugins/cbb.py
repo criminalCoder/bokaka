@@ -26,30 +26,34 @@ async def cb_handler(client: Client, query: CallbackQuery):
                 ]
             )
         )
-    elif cb_data.startswith("generate_stream_link"):
-        _, file_id = cb_data.split(":")
+    elif data.startswith("generate_stream_link"):
+        _, fileid = data.split(":")
+        print("hit generate_stream_link callback")
         try:
             user_id = query.from_user.id
-            username =  query.from_user.mention
+            username =  query.from_user.mention 
 
-            lazy_file = await media_forward(client, user_id=STREAM_LOGS, file_id=file_id)
-            
-            fileName = {quote_plus(get_name(lazy_file))}
-            lazy_stream = f"{URL}watch/{str(lazy_file.id)}/{quote_plus(get_name(lazy_file))}?hash={get_hash(lazy_file)}"
-            lazy_download = f"{URL}{str(lazy_file.id)}/{quote_plus(get_name(lazy_file))}?hash={get_hash(lazy_file)}"
+            log_msg = await client.send_cached_media(
+                chat_id=STREAM_LOGS, 
+                file_id=fileid,
+            )
+
+            fileName = {quote_plus(get_name(log_msg))}
+            lazy_stream = f"{URL}watch/{str(log_msg.id)}/{quote_plus(get_name(log_msg))}?hash={get_hash(log_msg)}"
+            lazy_download = f"{URL}{str(log_msg.id)}/{quote_plus(get_name(log_msg))}?hash={get_hash(log_msg)}"
 
             xo = await query.message.reply_text(f'🔐')
             await asyncio.sleep(1)
             await xo.delete()
 
-            await lazy_file.reply_text(
-                text=f"•• ʟɪɴᴋ ɢᴇɴᴇʀᴀᴛᴇᴅ ꜰᴏʀ ɪᴅ #{user_id} \n•• ᴜꜱᴇʀɴᴀᴍᴇ : {username} \n\n•• File Name: {fileName}",
+            await log_msg.reply_text(
+                text=f"•• ʟɪɴᴋ ɢᴇɴᴇʀᴀᴛᴇᴅ ꜰᴏʀ ɪᴅ #{user_id} \n•• ᴜꜱᴇʀɴᴀᴍᴇ : {username} \n\n•• ᖴᎥᒪᗴ Nᗩᗰᗴ : {fileName}",
                 quote=True,
                 disable_web_page_preview=True,
                 reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("web Download", url=lazy_download),  # we download Link
                                                     InlineKeyboardButton('▶Stream online', url=lazy_stream)]])  # web stream Link
             )
-            await query.message.edit(
+            await query.message.reply_text(
                 text="•• ʟɪɴᴋ ɢᴇɴᴇʀᴀᴛᴇᴅ ☠︎⚔",
                 quote=True,
                 disable_web_page_preview=True,
@@ -59,8 +63,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         except Exception as e:
             print(e)  # print the error message
             await query.answer(f"☣something went wrong sweetheart\n\n{e}", show_alert=True)
-            return
-        
+            return 
     elif data.startswith("get_embed_code"):
         _, log_id, file_name = data.split(":")
         try:
