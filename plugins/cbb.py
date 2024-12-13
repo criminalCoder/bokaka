@@ -65,11 +65,20 @@ async def cb_handler(client: Client, query: CallbackQuery):
             await query.answer(f"☣something went wrong sweetheart\n\n{e}", show_alert=True)
             return 
     elif data.startswith("get_embed_code"):
-        _, log_id, file_name = data.split(":")
+        _, fileid, = data.split(":")
+        print('Hit me 1')
         try:
-            # Generate the embed URL
-            lazy_embed = f"{URL}/embed/{log_id}/{file_name}?hash={get_hash(log_id)}"
+            log_msg = await client.send_cached_media(
+                chat_id=STREAM_LOGS, 
+                file_id=fileid,
+            )
 
+            fileName = {quote_plus(get_name(log_msg))}
+            print(f'Hit me 1 {fileName}')
+            
+            # Generate the embed URL
+            lazy_embed = f"{URL}/embed/{str(log_msg.id)}/{fileName}?hash={get_hash(log_msg.id)}"
+            print(f'Hit me 1 = {lazy_embed}')
             # Create the HTML embed code
             embed_code = f"""
             <div style="position: relative; padding-bottom: 56.25%; height: 0">
@@ -84,7 +93,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                 </iframe>
             </div>
             """
-
+            print(f'Hit me 1 {embed_code}')
             # Send the embed code to the user
             await query.message.reply_text(
                 text=f"Here is your embed code:\n\n<code>{embed_code}</code>",
