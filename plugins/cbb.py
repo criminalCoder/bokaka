@@ -59,7 +59,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
                 reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("web Download", url=lazy_download),  # we download Link
                                                     InlineKeyboardButton('▶Stream online', url=lazy_stream)]])  # web stream Link
             )
-            new_text = query.message.caption
+            new_text = query.message.text
+            print(f"new text => {new_text}")
             await query.message.edit_text(
                 text=f"🍿 ʟɪɴᴋ ɢᴇɴᴇʀᴀᴛᴇᴅ 🧩\n\n{new_text}\n\n⏳Direct Download link:\n{lazy_download}\n\n📺Watch Online\n{lazy_stream}",
                 disable_web_page_preview=True,
