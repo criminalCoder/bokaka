@@ -34,7 +34,7 @@ async def render_page(id, secure_hash, page_type):
             async with aiofiles.open('template/embed.html') as r:
                 heading = 'Watch {}'.format(file_data.file_name)
                 tag = file_data.mime_type.split('/')[0].strip()
-                html = (await r.read()).replace('tag', tag) % (heading, file_data.file_name, src)
+                html = (await r.read()).replace('tag', tag).format(heading=heading, src=src)
 
     elif str(file_data.mime_type.split('/')[0].strip()) == 'audio':
         if page_type=="req":
