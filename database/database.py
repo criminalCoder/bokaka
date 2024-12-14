@@ -36,14 +36,14 @@ async def get_admin_ids():
     Fetch the list of all admin IDs stored in the database.
     Returns an empty list if no admin IDs exist.
     """
-    record = await admin_data.find_one({"type": "admin_list"})
+    record = admin_data.find_one({"type": "admin_list"})
     return record.get("admin_ids", []) if record else []
 
 async def add_admin_id(admin_id: int):
     """
     Add an admin ID to the admin list. Avoids duplicates using $addToSet.
     """
-    await admin_data.update_one(
+    admin_data.update_one(
         {"type": "admin_list"},
         {"$addToSet": {"admin_ids": admin_id}},  # Avoid duplicates
         upsert=True  # Create the document if it doesn't exist
@@ -53,7 +53,7 @@ async def remove_admin_id(admin_id: int):
     """
     Remove an admin ID from the list.
     """
-    await admin_data.update_one(
+    admin_data.update_one(
         {"type": "admin_list"},
         {"$pull": {"admin_ids": admin_id}}  # Remove the admin ID
     )   
