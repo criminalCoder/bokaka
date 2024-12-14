@@ -100,6 +100,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
             xo = await query.message.reply_text(f'🔐')
             user_id = query.from_user.id
             username =  query.from_user.mention 
+            new_text = query.message.text
+            print(f"new text => {new_text}")
             # Directly access the file from the callback query's associated message
             file = getattr(query.message.reply_to_message, query.message.reply_to_message.media.value)
             file_id = file.file_id
@@ -125,8 +127,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                 reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("web Download", url=lazy_download),  # we download Link
                                                     InlineKeyboardButton('▶Stream online', url=lazy_stream)]])  # web stream Link
             )
-            new_text = query.message.text
-            print(f"new text => {new_text}")
+            
             await query.message.edit_text(
                 text=f"🍿 ʟɪɴᴋ ɢᴇɴᴇʀᴀᴛᴇᴅ 🧩\n\n<blockquote>{new_text}</blockquote>\n<blockquote>⏳Direct Download link:\n{lazy_download}</blockquote>\n<blockquote>📺Watch Online\n{lazy_stream}</blockquote>",
                 disable_web_page_preview=True,
