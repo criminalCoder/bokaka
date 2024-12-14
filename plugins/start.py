@@ -1,12 +1,12 @@
 import os, asyncio, humanize
-from pyrogram import Client, filters, __version__
+from pyrogram import Client, filters, enums, __version__
 from pyrogram.enums import ParseMode
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram.errors import FloodWait,ChatAdminRequired, UserIsBlocked, InputUserDeactivated
 # from bot import Bot
 from config import *
 from helper_func import subscribed, encode, decode, get_messages
-from database.database import add_user, del_user, full_userbase, present_user
+from database.database import add_user, del_user, full_userbase, present_user, add_admin_id, get_admin_ids, remove_admin_id
 logger = logging.getLogger(__name__)
 
 neha_delete_time = FILE_AUTO_DELETE
@@ -67,13 +67,13 @@ async def start_command(client: Client, message: Message):
                                              filename=msg.document.file_name) if bool(CUSTOM_CAPTION) and bool(msg.document)
                        else ("" if not msg.caption else msg.caption.html))
             print(f"msg ==> {msg}")
-            # reply_markup = msg.reply_markup if DISABLE_CHANNEL_BUTTON else None
-            reply_markup = InlineKeyboardMarkup(
-                            [
-                            [InlineKeyboardButton("📂Downolad / Stream🍿", callback_data=f'downstreamlink:{msg.document.file_id}')],
-                            [InlineKeyboardButton("<> Get EMBED code </>", callback_data=f'embedcode:{msg.document.file_id}')]
-                            ]
-                            )
+            reply_markup = msg.reply_markup if DISABLE_CHANNEL_BUTTON else None
+            # reply_markup = InlineKeyboardMarkup(
+            #                 [
+            #                 [InlineKeyboardButton("📂Downolad / Stream🍿", callback_data=f'downstreamlink:{msg.document.file_id}')],
+            #                 [InlineKeyboardButton("<> Get EMBED code </>", callback_data=f'embedcode:{msg.document.file_id}')]
+            #                 ]
+            #                 )
             try:
                 copied_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, 
                                             reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
@@ -237,3 +237,118 @@ async def delete_files(messages, client, k):
 
     # Edit message with the button
     await k.edit_text("<b><i>Your Video / File Is Successfully Deleted ✅</i></b>", reply_markup=keyboard)
+
+# ????????????????????????????????????????????????????????///
+@Client.on_message(filters.private & filters.command("add_admin"))
+async def set_admin(client, message: Message):
+    user_id = message.from_user.id
+    lazyid = message.from_user.id
+    id = message.from_user.id
+    if not await present_user(id):
+        try:
+            await add_user(id)
+        except Exception as e:
+            print(f"Error adding user: {e}")
+            pass
+
+    if user_id not in OWNERS:
+        return await message.reply("🤚Hello bro, This command is only for owners.")
+
+    if not await verify_user(lazyid):
+        return await message.reply("⛔ You are not authorized to use this bot.")
+
+    # Ask the user for the channel ID
+    admin_msg = await client.ask(
+        user_id, 
+        "🧩 Please send the `admin_id` you want to add to admins list:", 
+        filters=filters.text
+    )
+
+    # Validate the channel ID
+    try:
+        admin_id = int(admin_msg.text)
+    except ValueError:
+        return await admin_msg.reply("❌ Invalid Admin ID. Please send a valid Admin ID.")
+
+    # Check if the channel ID is already in the user's list
+    adminlists = await get_admin_ids()
+    if admin_id in adminlists:
+        return await admin_msg.reply(f"🆔 Admin ID {admin_id} is already in your list. Please send another ID.")
+
+    # Add the Admin ID to the user's list using the existing database method
+
+    await add_admin_id(admin_id)
+
+    await admin_msg.reply(f"🧩 Admin ID {admin_id} has been added successfully to Admin list.")
+
+@Client.on_message(filters.private & filters.command("remove_admin"))
+async def remove_admin(client, message: Message):
+    user_id = message.from_user.id
+    lazyid = message.from_user.id
+    if not await present_user(user_id):
+        try:
+            await add_user(user_id)
+        except Exception as e:
+            print(f"Error adding user: {e}")
+            pass
+
+    if user_id not in OWNERS:
+        return await message.reply("🤚Hello bro, This command is only for owners.")
+
+    if not await verify_user(lazyid):
+        return await message.reply("⛔ You are not authorized to use this bot.")
+    
+    # Extract the channel_id from the message text
+    parts = message.text.split()
+    if len(parts) < 2:
+        return await message.reply("🆘 Usage: `/remove_admin <admin_id>` to remove from \n\n❌ Please provide a `admin_id` to remove.")
+
+    try:
+        admin_id = int(parts[1])
+    except ValueError:
+        return await message.reply("❌ Invalid Admin ID. Please provide a valid numeric ID.")
+
+        # Check if the channel ID is already in the user's list
+    adminlists = await get_admin_ids()
+    if admin_id not in adminlists:
+        return await message.reply(f"🧩 Admin ID {admin_id} not found in database 👎.\n\n❌ Please send another valid ID to remove.")
+
+    # Remove the channel ID from the user's list using the existing database method
+    await remove_admin_id(admin_id)
+    
+    await message.reply(f"🚮 Admin ID {admin_id} has been removed successfully.")
+
+@Client.on_message(filters.private & filters.command("view_admin_list"))
+async def list_admins(client, message: Message):
+    user_id = message.from_user.id
+    lazyid = message.from_user.id
+    
+    if not await present_user(user_id):
+        try:
+            await add_user(user_id)
+        except Exception as e:
+            print(f"Error adding user: {e}")
+            pass
+
+    if user_id not in OWNERS:
+        return await message.reply("🤚Hello bro, This command is only for owners.")
+
+    if not await verify_user(lazyid):
+        return await message.reply("⛔ You are not authorized to use this bot.")
+    
+    # Get the list of channel IDs from the database
+    admin_ids = await get_admin_ids()
+
+    if not admin_ids:
+        return await message.reply("❌ You don't have any Admin IDs saved yet.")
+
+    # Format the list of channel IDs and send it to the user
+    admin_list = "\n├🆔 ".join([str(admin_id) for admin_id in admin_ids])
+    await message.reply(f"🧩 Your saved Admin IDs:\n├🆔 {admin_list}", parse_mode=enums.ParseMode.HTML)
+
+# ///////////////////////////////////////////////////////////////
+# ///////////////////////////////////////////////////////////////
+async def verify_user(user_id: int):
+    LAZYLISTS = await get_admin_ids()
+    return user_id in ADMINS or user_id in LAZYLISTS
+

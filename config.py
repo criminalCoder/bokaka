@@ -82,6 +82,12 @@ try:
         ADMINS.append(int(x))
 except ValueError:
         raise Exception("Your Admins list does not contain valid integers.")
+try:
+    OWNERS=[5965340120]
+    for x in (os.environ.get("OWNERS", "").split()):
+        OWNERS.append(int(x))
+except ValueError:
+        raise Exception("Your OWNERS list does not contain valid integers.")
 
 #Force sub message 
 FORCE_MSG = os.environ.get("FORCE_SUB_MESSAGE", "<b>🌟 Hello, {first}!\n\nJoin our amazing channels to unlock exclusive content! After joining, simply hit the reload button to access your requested file. Let’s get started!</b>")

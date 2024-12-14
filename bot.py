@@ -47,13 +47,13 @@ async def lazyDeveloperStartBOT():
         # sys.exit() #if bot is admin & you are getting admin issue again and again then u can also remove this line of code 
 
     lazydeveloperxbot.set_parse_mode(ParseMode.HTML)
-    print("[[[[[[[[[[[[[[[[[[[[[[[❤]]]]]]]]]]]]]]]]]]]]]]]")
-    print("[[[[[[[[[[[[[[[[[[[[[[[❤]]]]]]]]]]]]]]]]]]]]]]]")
-    print("[[[[[[[[[[[[[[[[[[[[[[[❤]]]]]]]]]]]]]]]]]]]]]]]")
-    lazydeveloperxbot.LOGGER(__name__).info(f"[||==> ❤ with love  llı🎉 L͙a͙z͙y͙D͙e͙v͙e͙l͙o͙p͙e͙r͙r͙ 🍿ıll with love ❤ <==||]")
-    print("[[[[[[[[[[[[[[[[[[[[[[[❤]]]]]]]]]]]]]]]]]]]]]]]")
-    print("[[[[[[[[[[[[[[[[[[[[[[[❤]]]]]]]]]]]]]]]]]]]]]]]")
-    print("[[[[[[[[[[[[[[[[[[[[[[[❤]]]]]]]]]]]]]]]]]]]]]]]")
+    print("[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[❤]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]")
+    print("[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[❤]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]")
+    print("[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[❤]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]")
+    print(f"[||==> ❤ with love  llı🎉 L͙a͙z͙y͙D͙e͙v͙e͙l͙o͙p͙e͙r͙r͙ 🍿ıll with love ❤ <==||]")
+    print("[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[❤]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]")
+    print("[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[❤]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]")
+    print("[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[❤]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]")
     lazydeveloperxbot.username = usr_bot_me.username
     #web-response
     app = web.AppRunner(await web_server())

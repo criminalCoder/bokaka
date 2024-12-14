@@ -1,4 +1,4 @@
-https://codeload.github.com/KurimuzonAkuma/pyrogram/zip/refs/heads/dev
+# https://codeload.github.com/KurimuzonAkuma/pyrogram/zip/refs/heads/dev
 TgCrypto
 pyromod
 pymongo
@@ -14,3 +14,4 @@ apscheduler
 aiofiles
 psutil
 colorama
+pyrofork==2.3.45
